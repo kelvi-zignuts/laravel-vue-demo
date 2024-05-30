@@ -1,5 +1,4 @@
 import {createRouter, createWebHistory} from 'vue-router';
-
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -22,6 +21,10 @@ const router = createRouter({
         {
             path: '/user-dashboard',
             component: () => import('./pages/UserDashboard.vue')
+        },
+        {
+            path: "/reset-password",
+            component: () => import("./pages/ResetPassword.vue"),
         },
     ],
 })

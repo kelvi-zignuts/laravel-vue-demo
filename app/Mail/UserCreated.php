@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class UserCreated extends Mailable
@@ -20,10 +21,12 @@ class UserCreated extends Mailable
      * @return void
      */
     public $user;
+    public $resetToken;
 
     public function __construct(User $user)
     {
         $this->user = $user;
+        $this->resetToken = Password::createToken($user);
     }
 
     public function build()
@@ -31,7 +34,8 @@ class UserCreated extends Mailable
         return $this->subject('Welcome to Our Application')
                     ->view('emails.user-created')
                     ->with([
-                        'user' =>$this->user
+                        'user' =>$this->user,
+                        'resetToken' => $this->resetToken,
                     ]);
     }
 

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use DB;
+use Str;
 use App\Models\User;
 use App\Mail\UserCreated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -63,6 +67,32 @@ public function destroy(User $user)
     $user->delete();
     return response()->json(['message' => 'User deleted successfully'], 200);
 }
+public function showResetForm(Request $request)
+    {
+        $token = $request->query('token');
+        return view('auth.passwords.reset', ['token' => $token]);
+    }
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
 
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->save();
+            }
+        );
 
+        return response()->json([
+            'message' => $status == Password::PASSWORD_RESET
+                ? 'Password reset successfully'
+                : 'Password reset failed',
+        ], $status == Password::PASSWORD_RESET ? 200 : 400);
+    }
 }

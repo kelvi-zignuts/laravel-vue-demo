@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/{vue_capture?}', function() {
     return view('welcome');
 })->where('vue_capture', '[\/\w\.-]*');
+
+Route::get('/reset-password', [UserController::class, 'showResetForm']);
+Route::post('/reset-password', [UserController::class, 'reset']);
